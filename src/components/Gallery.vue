@@ -15,8 +15,8 @@
         <span class="progress-button">&rsaquo;</span>
       </a>
     </div>
-    <div v-if="showIndicatorBar" class="bottom-spacer" />
-    <index-indicator v-if="showIndicatorBar" :count="itemCount" :current="currentIndex" @clicked="indicatorClicked" />
+    <div v-if="canShowIndicatorBar" class="bottom-spacer" />
+    <index-indicator v-if="canShowIndicatorBar" :count="itemCount" :current="currentIndex" @clicked="indicatorClicked" />
   </div>
 </template>
 
@@ -110,6 +110,11 @@ export default {
       const cardItems = (this.maxWidth - 2 * buttonPx - 2 * cardSpacingPx) / (1.1 * cardWidthPx)
       return Math.floor(cardItems)
     },
+    canShowIndicatorBar() {
+      const indicatorWidth = convertRemToPixels(1)
+      const indicatorAllowance = this.maxWidth / (indicatorWidth * this.itemCount)
+      return this.showIndicatorBar && indicatorAllowance > 0.1
+    },
     valueAdjustment() {
       const halfWindow = Math.floor(this.numberOfItemsVisible / 2)
       let valueAdjust = this.currentIndex - halfWindow
@@ -138,34 +143,6 @@ export default {
     },
     goPrev() {
       this.currentIndex -= 1
-    },
-    displayState(index) {
-      const oddImagesVisible = this.numberOfItemsVisible % 2 === 1
-      let halfVisible = this.numberOfItemsVisible / 2
-      if (oddImagesVisible) {
-        halfVisible = (this.numberOfItemsVisible - 1) / 2
-      }
-      let rawIndicies = [this.currentIndex]
-      for (let i = 1; i <= halfVisible; i++) {
-        rawIndicies.push(this.currentIndex + i)
-        rawIndicies.push(this.currentIndex - i)
-      }
-
-      if (!oddImagesVisible) {
-        rawIndicies.pop()
-      }
-      let indecies = []
-      for (let v of rawIndicies) {
-        if (v < 0) {
-          indecies.push(v + this.numberOfItemsVisible)
-        } else if (v >= this.itemCount) {
-          indecies.push(v - this.numberOfItemsVisible)
-        } else {
-          indecies.push(v)
-        }
-      }
-
-      return indecies.includes(index) ? undefined : 'none'
     },
     indicatorClicked(index) {
       if (this.currentIndex !== index) {
