@@ -1,9 +1,10 @@
 <template>
   <div ref="myButton" class="gallery">
     <div class="gallery-strip">
-      <a href="#" :class="['oval', 'prev', { disabled: !isPrevPossible }]" @click.prevent="goPrev">
+      <a v-if="items.length > 1" href="#" :class="['oval', 'prev', { disabled: !isPrevPossible }]" @click.prevent="goPrev">
         <span class="progress-button">&lsaquo;</span>
       </a>
+      <div v-else style="width: 2rem" />
       <div class="filler" />
       <div class="card-line">
         <span
@@ -12,16 +13,27 @@
           :style="{ display: displayState(index) }"
           :class="['key-image-span', { active: isActive(index) }]"
         >
-          <card :data="item" :width="cardWidth" :height="cardHeight" :show-card-details="showCardDetails" />
+          <card
+            v-if="isVisible(index)"
+            :data="item"
+            :body-style="bodyStyle"
+            :image-style="imageStyle"
+            :width="cardWidth"
+            :height="cardHeight"
+            :shadow="shadow"
+            :show-card-details="showCardDetails"
+            @card-clicked="cardClicked"
+          />
         </span>
       </div>
       <div class="filler" />
-      <a href="#" :class="['oval', 'next', { disabled: !isNextPossible }]" @click.prevent="goNext">
+      <a v-if="items.length > 1" href="#" :class="['oval', 'next', { disabled: !isNextPossible }]" @click.prevent="goNext">
         <span class="progress-button">&rsaquo;</span>
       </a>
+      <div v-else style="width: 2rem" />
     </div>
-    <div v-if="showIndicatorBar" class="bottom-spacer" />
-    <index-indicator v-if="showIndicatorBar" :count="itemCount" :current="currentIndex" @clicked="indicatorClicked" />
+    <div v-if="showIndicatorBar && items.length > 1" :style="bottomSpacer" />
+    <index-indicator v-if="showIndicatorBar && items.length > 1" :count="itemCount" :current="currentIndex" @clicked="indicatorClicked" />
   </div>
 </template>
 
@@ -66,6 +78,24 @@ export default {
       type: Boolean,
       default: true,
     },
+    bodyStyle: {
+      type: Object,
+      default: () => {
+        return { padding: '20px', background: '#ffffff' }
+      },
+    },
+    imageStyle: {
+      type: Object,
+      default: () => {
+        return {}
+      },
+    },
+    bottomSpacer: {
+      type: Object,
+      default: () => {
+        return { minHeight: '4rem' }
+      },
+    },
     metaData: {
       type: Object,
       default: () => {
@@ -79,6 +109,10 @@ export default {
       type: String,
       default: '',
     },
+    shadow: {
+      type: String,
+      default: 'always',
+    },
   },
   data() {
     return {
@@ -86,6 +120,7 @@ export default {
       currentIndex: 0,
       controlHeight: 2,
       controlWidth: 2,
+      visibleIndecies: [],
     }
   },
   computed: {
@@ -113,12 +148,18 @@ export default {
       const buttonPx = convertRemToPixels(2)
       const cardWidthPx = convertRemToPixels(this.cardWidth)
       const cardItems = (this.maxWidth - 2 * buttonPx - 2 * cardSpacingPx) / (1.1 * cardWidthPx)
-      return Math.floor(cardItems)
+      return Math.max(1, Math.floor(cardItems))
     },
   },
   methods: {
+    cardClicked(payload) {
+      this.$emit('card-clicked', payload)
+    },
     isActive(index) {
       return this.currentIndex === index && this.highlightActive
+    },
+    isVisible(index) {
+      return this.visibleIndecies.includes(index)
     },
     goNext() {
       this.currentIndex += 1
@@ -127,37 +168,46 @@ export default {
       this.currentIndex -= 1
     },
     displayState(index) {
-      const oddImagesVisible = this.numberOfItemsVisible % 2 === 1
-      let halfVisible = this.numberOfItemsVisible / 2
-      if (oddImagesVisible) {
-        halfVisible = (this.numberOfItemsVisible - 1) / 2
-      }
-      let rawIndicies = [this.currentIndex]
-      for (let i = 1; i <= halfVisible; i++) {
-        rawIndicies.push(this.currentIndex + i)
-        rawIndicies.push(this.currentIndex - i)
-      }
-
-      if (!oddImagesVisible) {
-        rawIndicies.pop()
-      }
-      let indecies = []
-      for (let v of rawIndicies) {
-        if (v < 0) {
-          indecies.push(v + this.numberOfItemsVisible)
-        } else if (v >= this.itemCount) {
-          indecies.push(v - this.numberOfItemsVisible)
-        } else {
-          indecies.push(v)
-        }
-      }
-
-      return indecies.includes(index) ? undefined : 'none'
+      return this.visibleIndecies.includes(index) ? undefined : 'none'
     },
     indicatorClicked(index) {
       if (this.currentIndex !== index) {
         this.currentIndex = index
       }
+    },
+  },
+  created() {
+    this._visibleIndecies = []
+  },
+  watch: {
+    currentIndex: {
+      handler: function () {
+        const oddImagesVisible = this.numberOfItemsVisible % 2 === 1
+        let halfVisible = this.numberOfItemsVisible / 2
+        if (oddImagesVisible) {
+          halfVisible = (this.numberOfItemsVisible - 1) / 2
+        }
+        let rawIndicies = [this.currentIndex]
+        for (let i = 1; i <= halfVisible; i++) {
+          rawIndicies.push(this.currentIndex + i)
+          rawIndicies.push(this.currentIndex - i)
+        }
+
+        if (!oddImagesVisible) {
+          rawIndicies.pop()
+        }
+        this.visibleIndecies = []
+        for (let v of rawIndicies) {
+          if (v < 0) {
+            this.visibleIndecies.push(v + this.numberOfItemsVisible)
+          } else if (v >= this.itemCount) {
+            this.visibleIndecies.push(v - this.numberOfItemsVisible)
+          } else {
+            this.visibleIndecies.push(v)
+          }
+        }
+      },
+      immediate: true,
     },
   },
 }
@@ -192,10 +242,7 @@ export default {
 .progress-button {
   font-size: 1.5rem;
   font-weight: bold;
-}
-
-.bottom-spacer {
-  min-height: 4rem;
+  color: #8300bf;
 }
 
 .filler {

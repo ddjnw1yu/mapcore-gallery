@@ -18,6 +18,8 @@
   "dependencies": {
     "@abi-software/svg-sprite": "^0.1.11",
     "@babel/code-frame": "^7.12.11",
+    "axios": "^0.26.1",
+    "babel-plugin-component": "^1.1.1",
     "core-js": "^3.8.3",
     "element-ui": "^2.15.0",
     "vue": "^2.6.11"

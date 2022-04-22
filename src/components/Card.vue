@@ -1,7 +1,9 @@
 <template>
-  <el-card :style="{ padding: '0px', maxWidth: width + 'rem' }" class="card">
+  <el-card :shadow="shadow" :body-style="bodyStyle" :style="{ padding: '0px', maxWidth: width + 'rem' }" class="card">
     <div v-loading="!isReady">
-      <img :src="data.thumbnail" alt="thumbnail loading ..." />
+      <div :style="imageStyle">
+        <img :src="thumbnail" alt="thumbnail loading ..." :style="imageStyle" />
+      </div>
       <div v-if="false" class="image-overlay">
         <div
           class="triangle-right-corner"
@@ -21,12 +23,11 @@
         <p>
           <b>{{ data.type }}</b>
         </p>
-        <el-tooltip :content="data.title">
-          <p class="title">
-            {{ data.title }}
-          </p>
-        </el-tooltip>
-        <el-button @click.prevent="openLinkInNewTab"> View {{ data.type }}</el-button>
+        <el-popover ref="galleryPopover" :content="data.title" placement="top" trigger="hover" popper-class="gallery-popper" />
+        <p class="title" v-popover:galleryPopover>
+          {{ data.title }}
+        </p>
+        <el-button class="button" @click.prevent="cardClicked"> View {{ data.type }}</el-button>
       </div>
     </div>
   </el-card>
@@ -34,10 +35,35 @@
 
 <script>
 // import { SvgIcon } from '@abi-software/svg-sprite'
+import axios from 'axios'
+import Vue from 'vue'
+import { Button, Card, Popover } from 'element-ui'
+Vue.use(Button)
+Vue.use(Card)
+Vue.use(Popover)
+
+function isValidHttpUrl(string) {
+  let url = undefined
+
+  try {
+    url = new URL(string)
+  } catch (_) {
+    return false
+  }
+  return url.protocol === 'http:' || url.protocol === 'https:'
+}
+
+const getRequest = async (url, params, timeout) => {
+  return await axios({
+    method: 'get',
+    url,
+    params,
+    timeout,
+  })
+}
 
 export default {
   name: 'GalleryCard',
-  // components: { SvgIcon },
   props: {
     data: {
       type: Object,
@@ -54,16 +80,34 @@ export default {
     showCardDetails: {
       type: Boolean,
     },
+    bodyStyle: {
+      type: Object,
+      default: () => {
+        return { padding: '20px', background: '#ffffff' }
+      },
+    },
+    imageStyle: {
+      type: Object,
+      default: () => {
+        return {}
+      },
+    },
+    shadow: {
+      type: String,
+      default: 'always',
+    },
   },
   data() {
     return {
       ro: null,
       triangleSize: 4,
+      thumbnail: undefined,
+      defaultImg: require('../assets/logo-sparc-wave-primary.svg'),
     }
   },
   computed: {
     isReady() {
-      return this.data.title && this.data.thumbnail && this.data.link
+      return this.data.title && this.thumbnail && (this.data.link || this.data.userData)
     },
     imageHeight() {
       return this.showCardDetails ? this.height * 0.525 : this.height
@@ -87,20 +131,82 @@ export default {
     },
   },
   methods: {
-    openLinkInNewTab() {
-      const link = document.createElement('a')
-      console.log(this.data.link)
-      link.href = this.data.link
-      link.target = '_blank'
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
+    cardClicked: function () {
+      if (this.data.link) {
+        const link = document.createElement('a')
+        link.href = this.data.link
+        link.target = '_blank'
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+      }
+      if (this.data.userData) {
+        this.$emit('card-clicked', this.data.userData)
+      }
     },
+    downloadThumbnail: function (url, info) {
+      getRequest(url, {}, 11000).then(
+        (response) => {
+          let data = response.data
+          if (data.startsWith('data:')) {
+            this.thumbnail = response.data
+          } else {
+            if (this.data.mimetype) {
+              this.thumbnail = `data:${this.data.mimetype};base64,${response.data}`
+            } else {
+              this.thumbnail = response.data
+            }
+          }
+        },
+        (reason) => {
+          if (reason.message.includes('timeout') && reason.message.includes('exceeded') && info.fetchAttempts < 3) {
+            info.fetchAttempts += 1
+            this.downloadThumbnail(url, info)
+          } else {
+            this.thumbnail = this.defaultImg
+          }
+        }
+      )
+    },
+  },
+  created() {
+    //Check if thumbnail is set as url and mimetype is also set
+    if (this.data.thumbnail) {
+      if (isValidHttpUrl(this.data.thumbnail) && this.data.mimetype) {
+        this.downloadThumbnail(this.data.thumbnail, { fetchAttempts: 0 })
+      } else {
+        this.thumbnail = this.data.thumbnail
+      }
+    } else {
+      this.thumbnail = this.defaultImg
+    }
   },
 }
 </script>
 
 <style scoped>
+.button {
+  z-index: 10;
+  font-family: Asap;
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  background-color: #8300bf;
+  border: #8300bf;
+  color: white;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.button:hover {
+  background: #8300bf;
+  box-shadow: -3px 2px 4px 0 rgba(0, 0, 0, 0.25);
+  color: #fff;
+}
+
 .card {
   position: relative;
 }
@@ -133,5 +239,24 @@ p.bold {
   height: 0;
   border-left: solid transparent;
   border-top: solid #8300bf;
+}
+</style>
+
+<style>
+.gallery-popper {
+  background: #f3ecf6 !important;
+  border: 1px solid #8300bf;
+  border-radius: 4px;
+  color: #303133 !important;
+  font-size: 12px;
+  line-height: 1rem;
+  height: 1rem;
+  padding: 10px;
+}
+.gallery-popper.el-popper[x-placement^='top'] .popper__arrow {
+  border-top-color: #8300bf !important;
+}
+.gallery-popper.el-popper[x-placement^='top'] .popper__arrow:after {
+  border-top-color: #f3ecf6 !important;
 }
 </style>
