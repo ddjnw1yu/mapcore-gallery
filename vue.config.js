@@ -3,10 +3,9 @@ module.exports = {
   chainWebpack: config => {
     // GraphQL Loader
     config.module
-      .rule('svg')
-      .test(/\.(svg)$/i)
-      .use('svg-inline-loader')
-        .loader('svg-inline-loader')
+      .rule('vue')
+      .use('vue-svg-inline-loader')
+        .loader('vue-svg-inline-loader')
         .end()
   },
   css: { extract: false },

@@ -11,6 +11,7 @@
           <card
             :data="item"
             :body-style="bodyStyle"
+            :image-container-style="imageContainerStyle"
             :image-style="imageStyle"
             :width="cardWidth"
             :height="cardHeight"
@@ -82,6 +83,12 @@ export default {
       type: Object,
       default: () => {
         return { minHeight: '4rem' }
+      },
+    },
+    imageContainerStyle: {
+      type: Object,
+      default: () => {
+        return {}
       },
     },
     imageStyle: {

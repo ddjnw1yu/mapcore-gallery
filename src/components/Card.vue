@@ -1,8 +1,9 @@
 <template>
   <el-card :shadow="shadow" :body-style="bodyStyle" :style="{ padding: '0px', maxWidth: width + 'rem' }" class="card">
     <div v-loading="!isReady">
-      <div :style="imageStyle">
-        <img :src="thumbnail" alt="thumbnail loading ..." :style="imageStyle" />
+      <div :style="imageContainerStyle">
+        <img v-if="useDefaultImg" src="../assets/logo-sparc-wave-primary.svg" svg-inline :style="imageStyle" />
+        <img v-else :src="thumbnail" alt="thumbnail loading ..." :style="imageStyle" />
       </div>
       <div v-if="false" class="image-overlay">
         <div
@@ -92,6 +93,12 @@ export default {
         return {}
       },
     },
+    imageContainerStyle: {
+      type: Object,
+      default: () => {
+        return {}
+      },
+    },
     shadow: {
       type: String,
       default: 'always',
@@ -102,12 +109,12 @@ export default {
       ro: null,
       triangleSize: 4,
       thumbnail: undefined,
-      defaultImg: require('svg-inline-loader?classPrefix!../assets/logo-sparc-wave-primary.svg'),
+      useDefaultImg: false,
     }
   },
   computed: {
     isReady() {
-      return this.data.title && this.thumbnail && (this.data.link || this.data.userData)
+      return this.data.title && (this.thumbnail || this.useDefaultImg) && (this.data.link || this.data.userData)
     },
     imageHeight() {
       return this.showCardDetails ? this.height * 0.525 : this.height
@@ -158,7 +165,7 @@ export default {
             info.fetchAttempts += 1
             this.downloadThumbnail(url, info)
           } else {
-            this.thumbnail = this.defaultImg
+            this.useDefaultImg = true
           }
         }
       )
@@ -170,6 +177,7 @@ export default {
       immediate: true,
       handler: function () {
         this.thumbnail = undefined
+        this.useDefaultImg = false
         if (this.data.thumbnail) {
           if (isValidHttpUrl(this.data.thumbnail) && this.data.mimetype) {
             this.downloadThumbnail(this.data.thumbnail, { fetchAttempts: 0 })
@@ -177,7 +185,7 @@ export default {
             this.thumbnail = this.data.thumbnail
           }
         } else {
-          this.thumbnail = this.defaultImg
+          this.useDefaultImg = true
         }
       },
     },
