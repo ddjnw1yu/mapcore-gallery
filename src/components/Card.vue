@@ -102,7 +102,7 @@ export default {
       ro: null,
       triangleSize: 4,
       thumbnail: undefined,
-      defaultImg: require('../assets/logo-sparc-wave-primary.svg'),
+      defaultImg: require('svg-inline-loader?classPrefix!../assets/logo-sparc-wave-primary.svg'),
     }
   },
   computed: {
@@ -122,12 +122,7 @@ export default {
       return this.height * 0.076
     },
     typeIcon() {
-      // if (this.data.type == '3D Image') {
-      //   return require('../assets/3d_image_icon.svg')
-      // } else if (this.data.type == '3D Scaffold') {
-      //   return require('../assets/scaffold_image_icon.svg')
-      // }
-      return undefined // require('@/assets/data-icon.png')
+      return undefined
     },
   },
   methods: {
@@ -169,17 +164,23 @@ export default {
       )
     },
   },
-  created() {
-    //Check if thumbnail is set as url and mimetype is also set
-    if (this.data.thumbnail) {
-      if (isValidHttpUrl(this.data.thumbnail) && this.data.mimetype) {
-        this.downloadThumbnail(this.data.thumbnail, { fetchAttempts: 0 })
-      } else {
-        this.thumbnail = this.data.thumbnail
-      }
-    } else {
-      this.thumbnail = this.defaultImg
-    }
+  watch: {
+    data: {
+      deep: true,
+      immediate: true,
+      handler: function () {
+        this.thumbnail = undefined
+        if (this.data.thumbnail) {
+          if (isValidHttpUrl(this.data.thumbnail) && this.data.mimetype) {
+            this.downloadThumbnail(this.data.thumbnail, { fetchAttempts: 0 })
+          } else {
+            this.thumbnail = this.data.thumbnail
+          }
+        } else {
+          this.thumbnail = this.defaultImg
+        }
+      },
+    },
   },
 }
 </script>

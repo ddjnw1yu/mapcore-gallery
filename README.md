@@ -1,7 +1,7 @@
 # ABI-Software Gallery
 
-Project setup
-+++++++++++++
+## Project setup
+
 ::
 
 npm install

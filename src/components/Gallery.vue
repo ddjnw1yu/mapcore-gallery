@@ -7,14 +7,8 @@
       <div v-else style="width: 2rem" />
       <div class="filler" />
       <div class="card-line">
-        <span
-          v-for="(item, index) in items"
-          :key="'card_' + index"
-          :style="{ display: displayState(index) }"
-          :class="['key-image-span', { active: isActive(index) }]"
-        >
+        <span v-for="(item, index) in windowedItems" :key="'card_' + index" :class="['key-image-span', { active: isActive(index) }]">
           <card
-            v-if="isVisible(index)"
             :data="item"
             :body-style="bodyStyle"
             :image-style="imageStyle"
@@ -32,8 +26,8 @@
       </a>
       <div v-else style="width: 2rem" />
     </div>
-    <div v-if="showIndicatorBar && items.length > 1" :style="bottomSpacer" />
-    <index-indicator v-if="showIndicatorBar && items.length > 1" :count="itemCount" :current="currentIndex" @clicked="indicatorClicked" />
+    <div v-if="canShowIndicatorBar" :style="bottomSpacer" />
+    <index-indicator v-if="canShowIndicatorBar" :count="itemCount" :current="currentIndex" @clicked="indicatorClicked" />
   </div>
 </template>
 
@@ -84,16 +78,16 @@ export default {
         return { padding: '20px', background: '#ffffff' }
       },
     },
-    imageStyle: {
-      type: Object,
-      default: () => {
-        return {}
-      },
-    },
     bottomSpacer: {
       type: Object,
       default: () => {
         return { minHeight: '4rem' }
+      },
+    },
+    imageStyle: {
+      type: Object,
+      default: () => {
+        return {}
       },
     },
     metaData: {
@@ -150,13 +144,36 @@ export default {
       const cardItems = (this.maxWidth - 2 * buttonPx - 2 * cardSpacingPx) / (1.1 * cardWidthPx)
       return Math.max(1, Math.floor(cardItems))
     },
+    canShowIndicatorBar() {
+      const indicatorWidth = convertRemToPixels(1)
+      const indicatorAllowance = this.maxWidth / (indicatorWidth * this.itemCount)
+      return this.showIndicatorBar && indicatorAllowance > 0.1
+    },
+    valueAdjustment() {
+      const halfWindow = Math.floor(this.numberOfItemsVisible / 2)
+      let valueAdjust = this.currentIndex - halfWindow
+      if (valueAdjust < 0) {
+        valueAdjust = 0
+      } else if (valueAdjust + this.numberOfItemsVisible > this.itemCount) {
+        valueAdjust = this.itemCount - this.numberOfItemsVisible
+      }
+
+      return valueAdjust
+    },
+    windowedItems() {
+      let myArray = []
+      for (let i = 0; i < this.numberOfItemsVisible; i++) {
+        myArray.push(this.items[i + this.valueAdjustment])
+      }
+      return myArray
+    },
   },
   methods: {
     cardClicked(payload) {
       this.$emit('card-clicked', payload)
     },
     isActive(index) {
-      return this.currentIndex === index && this.highlightActive
+      return this.currentIndex - this.valueAdjustment === index && this.highlightActive
     },
     isVisible(index) {
       return this.visibleIndecies.includes(index)
@@ -166,9 +183,6 @@ export default {
     },
     goPrev() {
       this.currentIndex -= 1
-    },
-    displayState(index) {
-      return this.visibleIndecies.includes(index) ? undefined : 'none'
     },
     indicatorClicked(index) {
       if (this.currentIndex !== index) {
