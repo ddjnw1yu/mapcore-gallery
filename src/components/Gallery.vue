@@ -154,7 +154,7 @@ export default {
     canShowIndicatorBar() {
       const indicatorWidth = convertRemToPixels(1)
       const indicatorAllowance = this.maxWidth / (indicatorWidth * this.itemCount)
-      return this.showIndicatorBar && indicatorAllowance > 0.1
+      return this.showIndicatorBar && indicatorAllowance > 0.1 && this.itemCount > 1
     },
     valueAdjustment() {
       const halfWindow = Math.floor(this.numberOfItemsVisible / 2)

@@ -81,7 +81,7 @@ export default {
             let item = items.find(x => x.id === info.id)
             const name = response.name
             if (name) {
-              this.$set(item, 'title', name.substring(0, name.lastIndexOf('.')))
+              item.title = name
             }
           },
           reason => {
@@ -92,9 +92,6 @@ export default {
             ) {
               info.fetchAttempts += 1
               this.getImageInfoFromBiolucida(apiEndpoint, items, info)
-            } else {
-              let item = items.find(x => x.id === info.id)
-              this.$set(item, 'thumbnail', this.defaultImg)
             }
 
             return Promise.reject('Maximum iterations reached.')
