@@ -194,7 +194,9 @@ export default {
 </script>
 
 <style scoped>
-.button {
+.button,
+.button:hover,
+.button:focus {
   z-index: 10;
   font-family: Asap;
   font-size: 14px;
