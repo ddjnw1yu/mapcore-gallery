@@ -21,11 +21,11 @@
         </el-tooltip>
       </div>
       <div v-if="showCardDetails" class="details">
-        <p>
+        <p v-if="!data.hideType">
           <b>{{ data.type }}</b>
         </p>
         <el-popover ref="galleryPopover" :content="data.title" placement="top" trigger="hover" popper-class="gallery-popper" />
-        <p class="title" v-popover:galleryPopover>
+        <p v-if="!data.hideTitle" class="title" v-popover:galleryPopover>
           {{ data.title }}
         </p>
         <el-button class="button" @click.prevent="cardClicked"> View {{ data.type }}</el-button>
