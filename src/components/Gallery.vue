@@ -121,7 +121,6 @@ export default {
       currentIndex: 0,
       controlHeight: 2,
       controlWidth: 2,
-      visibleIndecies: [],
     }
   },
   computed: {
@@ -149,6 +148,7 @@ export default {
       const buttonPx = convertRemToPixels(2)
       const cardWidthPx = convertRemToPixels(this.cardWidth)
       const cardItems = (this.maxWidth - 2 * buttonPx - 2 * cardSpacingPx) / (1.1 * cardWidthPx)
+      //Display at least one item
       return Math.max(1, Math.floor(cardItems))
     },
     canShowIndicatorBar() {
@@ -182,9 +182,6 @@ export default {
     isActive(index) {
       return this.currentIndex - this.valueAdjustment === index && this.highlightActive
     },
-    isVisible(index) {
-      return this.visibleIndecies.includes(index)
-    },
     goNext() {
       this.currentIndex += 1
     },
@@ -196,9 +193,6 @@ export default {
         this.currentIndex = index
       }
     },
-  },
-  created() {
-    this._visibleIndecies = []
   },
   watch: {
     currentIndex: {
@@ -216,16 +210,6 @@ export default {
 
         if (!oddImagesVisible) {
           rawIndicies.pop()
-        }
-        this.visibleIndecies = []
-        for (let v of rawIndicies) {
-          if (v < 0) {
-            this.visibleIndecies.push(v + this.numberOfItemsVisible)
-          } else if (v >= this.itemCount) {
-            this.visibleIndecies.push(v - this.numberOfItemsVisible)
-          } else {
-            this.visibleIndecies.push(v)
-          }
         }
       },
       immediate: true,

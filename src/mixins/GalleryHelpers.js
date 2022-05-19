@@ -10,6 +10,8 @@ const getRequest = async (url, params, timeout) => {
 }
 
 export default {
+  //this mixin is not used by this code base but it can be used by other
+  //projects to get a handle to various resources
   data() {
     return {
       defaultImg: require('../assets/logo-sparc-wave-primary.svg'),
@@ -27,6 +29,9 @@ export default {
       const encoded_file_path = encodeURIComponent(file_path)
       return `${dataset_id}/${dataset_version}/files/${encoded_file_path}`
     },
+    /**
+     * Find data path in the array that matches the provide path
+     */
     findEntryWithPathInArray(array, path) {
       if (path && array) {
         for (let i = 0; i < array.length; i++) {
@@ -42,6 +47,10 @@ export default {
       }
       return undefined;
     },
+    /**
+     * Use the scaffoldViews to help with finding the correct thumbnails.
+     * Use the index if the workflow stated above fails.
+     */
     getThumbnailForScaffold(scaffold, scaffoldViews, thumbnails, index) {
       if (thumbnails && (thumbnails.length > 0)) {
         let thumbnail = undefined;

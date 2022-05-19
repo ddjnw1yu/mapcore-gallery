@@ -133,6 +133,10 @@ export default {
     },
   },
   methods: {
+    /**
+     * Open a new link if link is provide.
+     * Fire an event if userData is provide.
+     */
     cardClicked: function () {
       if (this.data.link) {
         const link = document.createElement('a')
@@ -146,6 +150,9 @@ export default {
         this.$emit('card-clicked', this.data.userData)
       }
     },
+    /**
+     * handle thumbnail downloading,, it will use a default svg image if fails
+     */
     downloadThumbnail: function (url, info) {
       getRequest(url, {}, 11000).then(
         (response) => {
