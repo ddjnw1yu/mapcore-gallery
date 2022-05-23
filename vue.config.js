@@ -8,5 +8,4 @@ module.exports = {
         .loader('vue-svg-inline-loader')
         .end()
   },
-  css: { extract: false },
 }
