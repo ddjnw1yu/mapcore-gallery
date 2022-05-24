@@ -39,6 +39,7 @@
 import axios from 'axios'
 import Vue from 'vue'
 import { Button, Card, Popover } from 'element-ui'
+import GalleryHelper from "../mixins/GalleryHelpers";
 Vue.use(Button)
 Vue.use(Card)
 Vue.use(Popover)
@@ -54,17 +55,9 @@ function isValidHttpUrl(string) {
   return url.protocol === 'http:' || url.protocol === 'https:'
 }
 
-const getRequest = async (url, params, timeout) => {
-  return await axios({
-    method: 'get',
-    url,
-    params,
-    timeout,
-  })
-}
-
 export default {
   name: 'GalleryCard',
+  mixins: [GalleryHelper],
   props: {
     data: {
       type: Object,
@@ -154,7 +147,7 @@ export default {
      * handle thumbnail downloading,, it will use a default svg image if fails
      */
     downloadThumbnail: function (url, info) {
-      getRequest(url, {}, 11000).then(
+      this.getRequest(url, {}, 11000).then(
         (response) => {
           let data = response.data
           if (data.startsWith('data:')) {
