@@ -194,27 +194,6 @@ export default {
       }
     },
   },
-  watch: {
-    currentIndex: {
-      handler: function () {
-        const oddImagesVisible = this.numberOfItemsVisible % 2 === 1
-        let halfVisible = this.numberOfItemsVisible / 2
-        if (oddImagesVisible) {
-          halfVisible = (this.numberOfItemsVisible - 1) / 2
-        }
-        let rawIndicies = [this.currentIndex]
-        for (let i = 1; i <= halfVisible; i++) {
-          rawIndicies.push(this.currentIndex + i)
-          rawIndicies.push(this.currentIndex - i)
-        }
-
-        if (!oddImagesVisible) {
-          rawIndicies.pop()
-        }
-      },
-      immediate: true,
-    },
-  },
 }
 </script>
 
