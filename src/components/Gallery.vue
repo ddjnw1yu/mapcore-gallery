@@ -1,21 +1,33 @@
 <template>
   <div ref="myButton" class="gallery">
     <div class="gallery-strip">
-      <a href="#" :class="['oval', 'prev', { disabled: !isPrevPossible }]" @click.prevent="goPrev">
+      <a v-if="items.length > 1" href="#" :class="['oval', 'prev', { disabled: !isPrevPossible }]" @click.prevent="goPrev">
         <span class="progress-button">&lsaquo;</span>
       </a>
+      <div v-else style="width: 2rem" />
       <div class="filler" />
       <div class="card-line">
         <span v-for="(item, index) in windowedItems" :key="'card_' + index" :class="['key-image-span', { active: isActive(index) }]">
-          <card :data="item" :width="cardWidth" :height="cardHeight" :show-card-details="showCardDetails" />
+          <card
+            :data="item"
+            :body-style="bodyStyle"
+            :image-container-style="imageContainerStyle"
+            :image-style="imageStyle"
+            :width="cardWidth"
+            :height="cardHeight"
+            :shadow="shadow"
+            :show-card-details="showCardDetails"
+            @card-clicked="cardClicked"
+          />
         </span>
       </div>
       <div class="filler" />
-      <a href="#" :class="['oval', 'next', { disabled: !isNextPossible }]" @click.prevent="goNext">
+      <a v-if="items.length > 1" href="#" :class="['oval', 'next', { disabled: !isNextPossible }]" @click.prevent="goNext">
         <span class="progress-button">&rsaquo;</span>
       </a>
+      <div v-else style="width: 2rem" />
     </div>
-    <div v-if="canShowIndicatorBar" class="bottom-spacer" />
+    <div v-if="canShowIndicatorBar" :style="bottomSpacer" />
     <index-indicator v-if="canShowIndicatorBar" :count="itemCount" :current="currentIndex" @clicked="indicatorClicked" />
   </div>
 </template>
@@ -61,6 +73,30 @@ export default {
       type: Boolean,
       default: true,
     },
+    bodyStyle: {
+      type: Object,
+      default: () => {
+        return { padding: '20px', background: '#ffffff' }
+      },
+    },
+    bottomSpacer: {
+      type: Object,
+      default: () => {
+        return { minHeight: '4rem' }
+      },
+    },
+    imageContainerStyle: {
+      type: Object,
+      default: () => {
+        return {}
+      },
+    },
+    imageStyle: {
+      type: Object,
+      default: () => {
+        return {}
+      },
+    },
     metaData: {
       type: Object,
       default: () => {
@@ -73,6 +109,10 @@ export default {
     description: {
       type: String,
       default: '',
+    },
+    shadow: {
+      type: String,
+      default: 'always',
     },
   },
   data() {
@@ -108,12 +148,13 @@ export default {
       const buttonPx = convertRemToPixels(2)
       const cardWidthPx = convertRemToPixels(this.cardWidth)
       const cardItems = (this.maxWidth - 2 * buttonPx - 2 * cardSpacingPx) / (1.1 * cardWidthPx)
-      return Math.floor(cardItems)
+      //Display at least one item
+      return Math.max(1, Math.floor(cardItems))
     },
     canShowIndicatorBar() {
       const indicatorWidth = convertRemToPixels(1)
       const indicatorAllowance = this.maxWidth / (indicatorWidth * this.itemCount)
-      return this.showIndicatorBar && indicatorAllowance > 0.1
+      return this.showIndicatorBar && indicatorAllowance > 0.1 && this.itemCount > 1
     },
     valueAdjustment() {
       const halfWindow = Math.floor(this.numberOfItemsVisible / 2)
@@ -135,6 +176,9 @@ export default {
     },
   },
   methods: {
+    cardClicked(payload) {
+      this.$emit('card-clicked', payload)
+    },
     isActive(index) {
       return this.currentIndex - this.valueAdjustment === index && this.highlightActive
     },
@@ -182,10 +226,7 @@ export default {
 .progress-button {
   font-size: 1.5rem;
   font-weight: bold;
-}
-
-.bottom-spacer {
-  min-height: 4rem;
+  color: #8300bf;
 }
 
 .filler {
