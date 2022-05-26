@@ -36,10 +36,9 @@
 
 <script>
 // import { SvgIcon } from '@abi-software/svg-sprite'
-import axios from 'axios'
 import Vue from 'vue'
 import { Button, Card, Popover } from 'element-ui'
-import GalleryHelper from "../mixins/GalleryHelpers";
+import GalleryHelper from '../mixins/GalleryHelpers'
 Vue.use(Button)
 Vue.use(Card)
 Vue.use(Popover)
@@ -125,6 +124,25 @@ export default {
       return undefined
     },
   },
+  watch: {
+    data: {
+      deep: true,
+      immediate: true,
+      handler: function () {
+        this.thumbnail = undefined
+        this.useDefaultImg = false
+        if (this.data.thumbnail) {
+          if (isValidHttpUrl(this.data.thumbnail) && this.data.mimetype) {
+            this.downloadThumbnail(this.data.thumbnail, { fetchAttempts: 0 })
+          } else {
+            this.thumbnail = this.data.thumbnail
+          }
+        } else {
+          this.useDefaultImg = true
+        }
+      },
+    },
+  },
   methods: {
     /**
      * Open a new link if link is provide.
@@ -169,25 +187,6 @@ export default {
           }
         }
       )
-    },
-  },
-  watch: {
-    data: {
-      deep: true,
-      immediate: true,
-      handler: function () {
-        this.thumbnail = undefined
-        this.useDefaultImg = false
-        if (this.data.thumbnail) {
-          if (isValidHttpUrl(this.data.thumbnail) && this.data.mimetype) {
-            this.downloadThumbnail(this.data.thumbnail, { fetchAttempts: 0 })
-          } else {
-            this.thumbnail = this.data.thumbnail
-          }
-        } else {
-          this.useDefaultImg = true
-        }
-      },
     },
   },
 }
