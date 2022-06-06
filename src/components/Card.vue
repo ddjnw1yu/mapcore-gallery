@@ -24,10 +24,11 @@
         <p v-if="!data.hideType">
           <b>{{ data.type }}</b>
         </p>
-        <el-popover ref="galleryPopover" :content="data.title" placement="top" trigger="hover" popper-class="gallery-popper" />
+        <el-popover v-if="!data.hideTitle" ref="galleryPopover" :content="data.title" placement="top" trigger="hover" popper-class="gallery-popper" />
         <p v-if="!data.hideTitle" class="title" v-popover:galleryPopover>
           {{ data.title }}
         </p>
+        <p v-else class="title text-placeholder" />
         <el-button class="button" @click.prevent="cardClicked"> View {{ data.type }}</el-button>
       </div>
     </div>
@@ -222,6 +223,10 @@ export default {
 }
 .details {
   text-align: left;
+}
+
+.text-placeholder {
+  height: 1rem;
 }
 
 .title {
