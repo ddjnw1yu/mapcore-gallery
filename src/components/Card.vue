@@ -24,11 +24,19 @@
         <p v-if="!data.hideType">
           <b>{{ data.type }}</b>
         </p>
-        <el-popover v-if="!data.hideTitle" ref="galleryPopover" :content="data.title" placement="top" trigger="hover" popper-class="gallery-popper" />
-        <p v-if="!data.hideTitle" class="title" v-popover:galleryPopover>
+        <el-popover
+          ref="galleryPopover"
+          :disabled="disableTooltip"
+          :content="data.title"
+          placement="top"
+          trigger="hover"
+          popper-class="gallery-popper"
+        />
+        <!--use v-show here to make sure el popover always have a starting location -->
+        <p v-show="!data.hideTitle" ref="titleText" class="title" v-popover:galleryPopover>
           {{ data.title }}
         </p>
-        <p v-else class="title text-placeholder" />
+        <p v-show="data.hideTitle" class="title text-placeholder" />
         <el-button class="button" @click.prevent="cardClicked"> View {{ data.type }}</el-button>
       </div>
     </div>
@@ -103,6 +111,8 @@ export default {
       triangleSize: 4,
       thumbnail: undefined,
       useDefaultImg: false,
+      disableTooltip: false,
+      tooltipCalculated: false,
     }
   },
   computed: {
@@ -132,6 +142,8 @@ export default {
       handler: function () {
         this.thumbnail = undefined
         this.useDefaultImg = false
+        this.tooltipCalculated = false
+        this.disableTooltip = false
         if (this.data.thumbnail) {
           if (isValidHttpUrl(this.data.thumbnail) && this.data.mimetype) {
             this.downloadThumbnail(this.data.thumbnail, { fetchAttempts: 0 })
@@ -141,6 +153,10 @@ export default {
         } else {
           this.useDefaultImg = true
         }
+        //Dynamically check title length to determine if popover should be shown
+        this.$nextTick(() => {
+          this.calculateShowTooltip()
+        })
       },
     },
   },
@@ -189,6 +205,32 @@ export default {
         }
       )
     },
+    //dynamically calculate if tooltip is required
+    calculateShowTooltip: function () {
+      if (this.data.hideTitle) {
+        this.disableTooltip = true
+        this.tooltipCalculated = true
+      } else {
+        const ele = this.$refs.titleText
+        //Check if title text is rendered yet
+        if (ele && ele.offsetParent) {
+          this.tooltipCalculated = true
+          if (ele.offsetWidth >= ele.scrollWidth) this.disableTooltip = true
+          else this.disableTooltip = false
+        } else {
+          //text not rendered yet
+          if (this.data.title.length > 20) this.disableTooltip = false
+          else this.disableTooltip = true
+        }
+      }
+    },
+  },
+  updated: function () {
+    if (!this.tooltipCalculated) {
+      this.$nextTick(() => {
+        this.calculateShowTooltip()
+      })
+    }
   },
 }
 </script>
