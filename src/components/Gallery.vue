@@ -9,6 +9,7 @@
       <div class="card-line">
         <span v-for="(item, index) in windowedItems" :key="'card_' + index" :class="['key-image-span', { active: isActive(index) }]">
           <card
+            v-if="item"
             :data="item"
             :body-style="bodyStyle"
             :image-container-style="imageContainerStyle"
@@ -27,7 +28,7 @@
       </a>
       <div v-else style="width: 2rem" />
     </div>
-    <div v-if="canShowIndicatorBar" :style="bottomSpacer" />
+    <div :style="bottomSpacer" />
     <index-indicator v-if="canShowIndicatorBar" :count="itemCount" :current="currentIndex" @clicked="indicatorClicked" />
   </div>
 </template>
