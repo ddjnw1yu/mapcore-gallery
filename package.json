@@ -1,6 +1,6 @@
 {
-  "name": "@tehsurfer/gallery",
-  "version": "0.3.2-beta-4",
+  "name": "@/abi-software/gallery",
+  "version": "0.3.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/hsorby/mapcore-gallery.git"
