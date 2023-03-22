@@ -67,13 +67,20 @@ export default {
       return undefined
     },
     getImageURLFromS3(apiEndpoint, info) {
-      return `${apiEndpoint}/s3-resource/${info.datasetId}/${info.datasetVersion}/files/${info.file_path}?encodeBase64=true`
+      let url = `${apiEndpoint}/s3-resource/${info.datasetId}/${info.datasetVersion}/files/${info.file_path}?encodeBase64=true`
+      if (info.s3Bucket) {
+        url = url+ `&s3BucketName=${info.s3Bucket}`
+      }
+      return url
     },
     getSegmentationThumbnailURL(apiEndpoint, info) {
       let endpoint = `${apiEndpoint}/thumbnail/neurolucida`
       endpoint = endpoint + `?datasetId=${info.datasetId}`
       endpoint = endpoint + `&version=${info.datasetVersion}`
       endpoint = endpoint + `&path=files/${info.segmentationFilePath}`
+      if (info.s3Bucket) {
+        endpoint = endpoint + `&s3BucketName=${info.s3Bucket}`
+      }
       return endpoint
     },
     getThumbnailURLFromBiolucida(apiEndpoint, info) {
