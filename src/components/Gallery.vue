@@ -56,7 +56,7 @@ export default {
     },
     maxWidth: {
       type: Number,
-      required: true,
+      default: 3,
     },
     cardWidth: {
       type: Number,
