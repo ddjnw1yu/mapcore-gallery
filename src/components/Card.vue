@@ -1,7 +1,7 @@
 <template>
   <el-card :shadow="shadow" :body-style="bodyStyle" :style="{ padding: '0px', maxWidth: width + 'rem' }" class="card">
     <div v-loading="!isReady">
-      <div :style="imageContainerStyle">
+      <div class="cursor-pointer" :style="imageContainerStyle" @click.prevent="cardClicked">
         <img v-if="useDefaultImg" src="../assets/logo-sparc-wave-primary.svg" svg-inline :style="imageStyle" />
         <img v-else :src="thumbnail" alt="thumbnail loading ..." :style="imageStyle" />
       </div>
@@ -33,7 +33,7 @@
           popper-class="gallery-popper"
         />
         <!--use v-show here to make sure el popover always have a starting location -->
-        <p v-show="!data.hideTitle" ref="titleText" class="title" v-popover:galleryPopover>
+        <p v-show="!data.hideTitle" ref="titleText" v-popover:galleryPopover class="title">
           {{ data.title }}
         </p>
         <p v-show="data.hideTitle" class="title text-placeholder" />
@@ -46,11 +46,13 @@
 <script>
 // import { SvgIcon } from '@abi-software/svg-sprite'
 import Vue from 'vue'
-import { Button, Card, Popover } from 'element-ui'
+import { Button, Card, Popover, Tooltip, Loading } from 'element-ui'
 import GalleryHelper from '../mixins/GalleryHelpers'
 Vue.use(Button)
 Vue.use(Card)
 Vue.use(Popover)
+Vue.use(Tooltip)
+Vue.use(Loading)
 
 function isValidHttpUrl(string) {
   let url = undefined
@@ -185,7 +187,7 @@ export default {
       this.getRequest(url, {}, 11000).then(
         (response) => {
           let data = response.data
-          if (data.startsWith('data:')) {
+          if (typeof data === 'string' && data.startsWith('data:')) {
             this.thumbnail = response.data
           } else {
             if (this.data.mimetype) {
@@ -265,6 +267,10 @@ export default {
 }
 .details {
   text-align: left;
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 
 .text-placeholder {
