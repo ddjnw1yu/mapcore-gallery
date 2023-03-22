@@ -69,7 +69,7 @@ export default {
     getImageURLFromS3(apiEndpoint, info) {
       let url = `${apiEndpoint}/s3-resource/${info.datasetId}/${info.datasetVersion}/files/${info.file_path}?encodeBase64=true`
       if (info.s3Bucket) {
-        url = url+ `&s3BucketName=${info.s3Bucket}`
+        url = url + `&s3BucketName=${info.s3Bucket}`
       }
       return url
     },
