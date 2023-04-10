@@ -25,7 +25,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .indicator-container {
   display: flex;
   justify-content: center;
@@ -40,6 +40,6 @@ export default {
 }
 
 .indicator.active {
-  background-color: #8300bf;
+  background-color: $app-primary-color;
 }
 </style>

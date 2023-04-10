@@ -237,7 +237,14 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+
+@import "~element-ui/packages/theme-chalk/src/button";
+@import "~element-ui/packages/theme-chalk/src/card";
+@import "~element-ui/packages/theme-chalk/src/loading";
+@import "~element-ui/packages/theme-chalk/src/popover";
+@import "~element-ui/packages/theme-chalk/src/tooltip";
+
 .button,
 .button:hover,
 .button:focus {
@@ -249,15 +256,15 @@ export default {
   font-style: normal;
   line-height: normal;
   letter-spacing: normal;
-  background-color: #8300bf;
-  border: #8300bf;
+  background-color: $app-primary-color;
+  border: $app-primary-color;
   color: white;
   cursor: pointer;
   margin-top: 8px;
 }
 
 .button:hover {
-  background: #8300bf;
+  background: $app-primary-color;
   box-shadow: -3px 2px 4px 0 rgba(0, 0, 0, 0.25);
   color: #fff;
 }
@@ -301,14 +308,14 @@ p.bold {
   width: 0;
   height: 0;
   border-left: solid transparent;
-  border-top: solid #8300bf;
+  border-top: solid $app-primary-color;
 }
 </style>
 
-<style>
+<style lang="scss">
 .gallery-popper {
   background: #f3ecf6 !important;
-  border: 1px solid #8300bf;
+  border: 1px solid $app-primary-color;
   border-radius: 4px;
   color: #303133 !important;
   font-size: 12px;
@@ -317,7 +324,7 @@ p.bold {
   padding: 10px;
 }
 .gallery-popper.el-popper[x-placement^='top'] .popper__arrow {
-  border-top-color: #8300bf !important;
+  border-top-color: $app-primary-color !important;
 }
 .gallery-popper.el-popper[x-placement^='top'] .popper__arrow:after {
   border-top-color: #f3ecf6 !important;

@@ -198,7 +198,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .oval {
   width: 2rem;
   height: 2rem;
@@ -227,7 +227,7 @@ export default {
 .progress-button {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #8300bf;
+  color: $app-primary-color;
 }
 
 .filler {
