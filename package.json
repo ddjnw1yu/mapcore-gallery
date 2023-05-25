@@ -19,7 +19,10 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "build-bundle": "vue-cli-service build --target lib --name gallery src/main-bundle.js --skip-plugins @vue/cli-plugin-eslint",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "release:beta": "npm version prerelease --preid=beta; npm publish --tag beta",
+    "release:minor": "npm version minor; npm publish",
+    "release:patch": "npm version patch;  npm publish"
   },
   "main": "dist/gallery.common.js",
   "dependencies": {
