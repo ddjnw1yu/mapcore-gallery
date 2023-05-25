@@ -162,6 +162,13 @@ export default {
       },
     },
   },
+  updated: function () {
+    if (!this.tooltipCalculated) {
+      this.$nextTick(() => {
+        this.calculateShowTooltip()
+      })
+    }
+  },
   methods: {
     /**
      * Open a new link if link is provide.
@@ -227,23 +234,15 @@ export default {
       }
     },
   },
-  updated: function () {
-    if (!this.tooltipCalculated) {
-      this.$nextTick(() => {
-        this.calculateShowTooltip()
-      })
-    }
-  },
 }
 </script>
 
 <style scoped lang="scss">
-
-@import "~element-ui/packages/theme-chalk/src/button";
-@import "~element-ui/packages/theme-chalk/src/card";
-@import "~element-ui/packages/theme-chalk/src/loading";
-@import "~element-ui/packages/theme-chalk/src/popover";
-@import "~element-ui/packages/theme-chalk/src/tooltip";
+@import '~element-ui/packages/theme-chalk/src/button';
+@import '~element-ui/packages/theme-chalk/src/card';
+@import '~element-ui/packages/theme-chalk/src/loading';
+@import '~element-ui/packages/theme-chalk/src/popover';
+@import '~element-ui/packages/theme-chalk/src/tooltip';
 
 .button,
 .button:hover,
