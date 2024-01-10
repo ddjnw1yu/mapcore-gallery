@@ -1,13 +1,22 @@
 <template>
   <div ref="myButton" class="gallery">
     <div class="gallery-strip">
-      <a v-if="items.length > 1" href="#" :class="['oval', 'prev', { disabled: !isPrevPossible }]" @click.prevent="goPrev">
+      <a
+        v-if="items.length > 1"
+        href="#"
+        :class="['oval', 'prev', { disabled: !isPrevPossible }]"
+        @click.prevent="goPrev"
+      >
         <span class="progress-button">&lsaquo;</span>
       </a>
       <div v-else style="width: 2rem" />
       <div class="filler" />
       <div class="card-line">
-        <span v-for="(item, index) in windowedItems" :key="'card_' + index" :class="['key-image-span', { active: isActive(index) }]">
+        <span
+          v-for="(item, index) in windowedItems"
+          :key="'card_' + index"
+          :class="['key-image-span', { active: isActive(index) }]"
+        >
           <card
             v-if="item"
             :data="item"
@@ -23,23 +32,36 @@
         </span>
       </div>
       <div class="filler" />
-      <a v-if="items.length > 1" href="#" :class="['oval', 'next', { disabled: !isNextPossible }]" @click.prevent="goNext">
+      <a
+        v-if="items.length > 1"
+        href="#"
+        :class="['oval', 'next', { disabled: !isNextPossible }]"
+        @click.prevent="goNext"
+      >
         <span class="progress-button">&rsaquo;</span>
       </a>
       <div v-else style="width: 2rem" />
     </div>
     <div :style="bottomSpacer" />
-    <index-indicator v-if="canShowIndicatorBar" :count="itemCount" :current="currentIndex" @clicked="indicatorClicked" />
+    <index-indicator
+      v-if="canShowIndicatorBar"
+      :count="itemCount"
+      :current="currentIndex"
+      @clicked="indicatorClicked"
+    />
   </div>
 </template>
 
 <script>
-import IndexIndicator from './IndexIndicator'
-import Card from './Card'
+import IndexIndicator from './indexindicator.vue'
+import Card from './Card.vue'
 
 function convertRemToPixels(rem) {
   if (typeof window !== 'undefined') {
-    return rem * parseFloat(window.getComputedStyle(document.documentElement).fontSize)
+    return (
+      rem *
+      parseFloat(window.getComputedStyle(document.documentElement).fontSize)
+    )
   }
   return rem * 16
 }
@@ -148,14 +170,18 @@ export default {
       const cardSpacingPx = convertRemToPixels(0.5)
       const buttonPx = convertRemToPixels(2)
       const cardWidthPx = convertRemToPixels(this.cardWidth)
-      const cardItems = (this.maxWidth - 2 * buttonPx - 2 * cardSpacingPx) / (1.1 * cardWidthPx)
+      const cardItems =
+        (this.maxWidth - 2 * buttonPx - 2 * cardSpacingPx) / (1.1 * cardWidthPx)
       //Display at least one item
       return Math.max(1, Math.floor(cardItems))
     },
     canShowIndicatorBar() {
       const indicatorWidth = convertRemToPixels(1)
-      const indicatorAllowance = this.maxWidth / (indicatorWidth * this.itemCount)
-      return this.showIndicatorBar && indicatorAllowance > 0.1 && this.itemCount > 1
+      const indicatorAllowance =
+        this.maxWidth / (indicatorWidth * this.itemCount)
+      return (
+        this.showIndicatorBar && indicatorAllowance > 0.1 && this.itemCount > 1
+      )
     },
     valueAdjustment() {
       const halfWindow = Math.floor(this.numberOfItemsVisible / 2)
@@ -181,7 +207,10 @@ export default {
       this.$emit('card-clicked', payload)
     },
     isActive(index) {
-      return this.currentIndex - this.valueAdjustment === index && this.highlightActive
+      return (
+        this.currentIndex - this.valueAdjustment === index &&
+        this.highlightActive
+      )
     },
     goNext() {
       this.currentIndex += 1
@@ -198,7 +227,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .oval {
   width: 2rem;
   height: 2rem;

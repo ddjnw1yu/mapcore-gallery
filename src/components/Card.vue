@@ -1,20 +1,47 @@
 <template>
-  <el-card :shadow="shadow" :body-style="bodyStyle" :style="{ padding: '0px', maxWidth: width + 'rem' }" class="card">
+  <el-card
+    :shadow="shadow"
+    :body-style="bodyStyle"
+    :style="{ padding: '0px', maxWidth: width + 'rem' }"
+    class="card"
+  >
     <div v-loading="!isReady">
-      <div class="cursor-pointer" :style="imageContainerStyle" @click.prevent="cardClicked">
-        <img v-if="useDefaultImg" src="../assets/logo-sparc-wave-primary.svg" svg-inline :style="imageStyle" />
-        <img v-else :src="thumbnail" alt="thumbnail loading ..." :style="imageStyle" />
+      <div
+        class="cursor-pointer"
+        :style="imageContainerStyle"
+        @click.prevent="cardClicked"
+      >
+        <img
+          v-if="useDefaultImg"
+          src="../assets/logo-sparc-wave-primary.svg"
+          svg-inline
+          :style="imageStyle"
+        />
+        <img
+          v-else
+          :src="thumbnail"
+          alt="thumbnail loading ..."
+          :style="imageStyle"
+        />
       </div>
       <div v-if="false" class="image-overlay">
         <div
           class="triangle-right-corner"
-          :style="`border-left-width: ${triangleHeight * 1.2}rem; border-top-width: ${triangleHeight}rem;`"
+          :style="`border-left-width: ${
+            triangleHeight * 1.2
+          }rem; border-top-width: ${triangleHeight}rem;`"
           @click="openLinkInNewTab"
         />
-        <el-tooltip class="item" :content="`View ${data.type}`" placement="left">
+        <el-tooltip
+          class="item"
+          :content="`View ${data.type}`"
+          placement="left"
+        >
           <img
             class="triangle-icon"
-            :style="`height: ${triangleHeight * 0.25}rem;top: ${triangleHeight * 0.15}rem;right: ${triangleHeight * 0.15}rem`"
+            :style="`height: ${triangleHeight * 0.25}rem;top: ${
+              triangleHeight * 0.15
+            }rem;right: ${triangleHeight * 0.15}rem`"
             :src="typeIcon"
             @click="openLinkInNewTab"
           />
@@ -31,28 +58,37 @@
           placement="top"
           trigger="hover"
           popper-class="gallery-popper"
-        />
-        <!--use v-show here to make sure el popover always have a starting location -->
-        <p v-show="!data.hideTitle" ref="titleText" v-popover:galleryPopover class="title">
-          {{ data.title }}
-        </p>
-        <p v-show="data.hideTitle" class="title text-placeholder" />
-        <el-button class="button" @click.prevent="cardClicked"> View {{ data.type }}</el-button>
+        >
+        <template #reference>
+          <!--use v-show here to make sure el popover always have a starting location -->
+          <p
+            v-show="!data.hideTitle"
+            ref="titleText"
+            v-popover="galleryPopover"
+            class="title"
+          >
+            {{ data.title }}
+          </p>
+          <p v-show="data.hideTitle" class="title text-placeholder" />
+        </template>
+      </el-popover>
+        <el-button class="button" @click.prevent="cardClicked">
+          View {{ data.type }}</el-button
+        >
       </div>
     </div>
   </el-card>
 </template>
 
 <script>
-// import { SvgIcon } from '@abi-software/svg-sprite'
-import Vue from 'vue'
-import { Button, Card, Popover, Tooltip, Loading } from 'element-ui'
-import GalleryHelper from '../mixins/GalleryHelpers'
-Vue.use(Button)
-Vue.use(Card)
-Vue.use(Popover)
-Vue.use(Tooltip)
-Vue.use(Loading)
+import {
+  ElButton as Button,
+  ElCard as Card,
+  ElPopover as Popover,
+  ElTooltip as Tooltip,
+  ElLoading as Loading,
+} from 'element-plus'
+import GalleryHelper from '../mixins/GalleryHelpers.js'
 
 function isValidHttpUrl(string) {
   let url = undefined
@@ -67,6 +103,13 @@ function isValidHttpUrl(string) {
 
 export default {
   name: 'GalleryCard',
+  components: {
+    Button,
+    Card,
+    Popover,
+    Tooltip,
+    Loading
+  },
   mixins: [GalleryHelper],
   props: {
     data: {
@@ -119,7 +162,11 @@ export default {
   },
   computed: {
     isReady() {
-      return this.data.title && (this.thumbnail || this.useDefaultImg) && (this.data.link || this.data.userData)
+      return (
+        this.data.title &&
+        (this.thumbnail || this.useDefaultImg) &&
+        (this.data.link || this.data.userData)
+      )
     },
     imageHeight() {
       return this.showCardDetails ? this.height * 0.525 : this.height
@@ -205,7 +252,11 @@ export default {
           }
         },
         (reason) => {
-          if (reason.message.includes('timeout') && reason.message.includes('exceeded') && info.fetchAttempts < 3) {
+          if (
+            reason.message.includes('timeout') &&
+            reason.message.includes('exceeded') &&
+            info.fetchAttempts < 3
+          ) {
             info.fetchAttempts += 1
             this.downloadThumbnail(url, info)
           } else {
@@ -237,12 +288,12 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-@import '~element-ui/packages/theme-chalk/src/button';
-@import '~element-ui/packages/theme-chalk/src/card';
-@import '~element-ui/packages/theme-chalk/src/loading';
-@import '~element-ui/packages/theme-chalk/src/popover';
-@import '~element-ui/packages/theme-chalk/src/tooltip';
+<style lang="scss" scoped>
+@use 'element-plus/theme-chalk/src/button';
+@use 'element-plus/theme-chalk/src/card';
+@use 'element-plus/theme-chalk/src/popover';
+@use 'element-plus/theme-chalk/src/tooltip';
+@use 'element-plus/theme-chalk/src/loading';
 
 .button,
 .button:hover,
