@@ -66,6 +66,7 @@
             ref="titleText"
             v-popover="galleryPopover"
             class="title"
+            persistent
           >
             {{ data.title }}
           </p>
@@ -89,6 +90,7 @@ import {
   ElLoading as Loading,
 } from 'element-plus'
 import GalleryHelper from '../mixins/GalleryHelpers.js'
+import { ref } from 'vue'
 
 function isValidHttpUrl(string) {
   let url = undefined
@@ -158,6 +160,12 @@ export default {
       useDefaultImg: false,
       disableTooltip: false,
       tooltipCalculated: false,
+    }
+  },
+  setup() {
+    const galleryPopover = ref()
+    return {
+      galleryPopover
     }
   },
   computed: {
