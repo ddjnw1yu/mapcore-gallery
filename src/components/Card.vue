@@ -52,7 +52,7 @@
           <b>{{ data.type }}</b>
         </p>
         <el-popover
-          ref="galleryPopover"
+          :virtual-ref="titleText"
           :disabled="disableTooltip"
           :content="data.title"
           placement="top"
@@ -64,7 +64,6 @@
           <p
             v-show="!data.hideTitle"
             ref="titleText"
-            v-popover="galleryPopover"
             class="title"
             persistent
           >
@@ -163,9 +162,9 @@ export default {
     }
   },
   setup() {
-    const galleryPopover = ref()
+    const titleText = ref()
     return {
-      galleryPopover
+      titleText
     }
   },
   computed: {
