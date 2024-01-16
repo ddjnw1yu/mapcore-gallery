@@ -40,7 +40,8 @@
     "axios": "^1.6.5",
     "element-plus": "^2.4.4",
     "unplugin-vue-components": "^0.26.0",
-    "vue": "^3.3.13"
+    "vue": "^3.3.13",
+    "vue-svg-inline-plugin": "^2.2.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.6.2",

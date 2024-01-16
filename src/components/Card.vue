@@ -14,7 +14,7 @@
         <img
           v-if="useDefaultImg"
           src="../assets/logo-sparc-wave-primary.svg"
-          svg-inline
+          v-svg-inline
           :style="imageStyle"
         />
         <img
