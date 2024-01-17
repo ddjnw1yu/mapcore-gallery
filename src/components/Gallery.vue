@@ -1,3 +1,173 @@
+
+<script setup name="Gallery">
+import { ref, computed } from 'vue'
+
+import IndexIndicator from './IndexIndicator.vue'
+import Card from './Card.vue'
+
+function convertRemToPixels(rem) {
+  if (typeof window !== 'undefined') {
+    return (
+      rem *
+      parseFloat(window.getComputedStyle(document.documentElement).fontSize)
+    )
+  }
+  return rem * 16
+}
+
+const props = defineProps({
+  items: {
+    type: Array,
+    default: () => {
+      return []
+    },
+  },
+  maxWidth: {
+    type: Number,
+    default: 3,
+  },
+  cardWidth: {
+    type: Number,
+    default: 13.8,
+  },
+  showIndicatorBar: {
+    type: Boolean,
+    default: true,
+  },
+  highlightActive: {
+    type: Boolean,
+    default: true,
+  },
+  showCardDetails: {
+    type: Boolean,
+    default: true,
+  },
+  bodyStyle: {
+    type: Object,
+    default: () => {
+      return { padding: '20px', background: '#ffffff' }
+    },
+  },
+  bottomSpacer: {
+    type: Object,
+    default: () => {
+      return { minHeight: '4rem' }
+    },
+  },
+  imageContainerStyle: {
+    type: Object,
+    default: () => {
+      return {}
+    },
+  },
+  imageStyle: {
+    type: Object,
+    default: () => {
+      return {}
+    },
+  },
+  metaData: {
+    type: Object,
+    default: () => {
+      return {
+        datasetVersion: -1,
+        datasetId: -1,
+      }
+    },
+  },
+  description: {
+    type: String,
+    default: '',
+  },
+  shadow: {
+    type: String,
+    default: 'always',
+  },
+})
+
+const emit = defineEmits(['card-clicked'])
+
+const count = ref(0)
+const currentIndex = ref(0)
+const controlHeight = ref(2)
+const controlWidth = ref(2)
+
+const itemCount = computed(() => {
+  return props.items.length
+})
+const isPrevPossible = computed(() => {
+  return currentIndex.value > 0
+})
+const isNextPossible = computed(() => {
+  return currentIndex.value < itemCount.value - 1
+})
+const cardHeight = computed(() => {
+  return 0.78 * props.cardWidth
+})
+const cardLineWidth = computed(() => {
+  const cardSpacing = 0.25
+  return itemCount.value * (props.cardWidth + cardSpacing) - cardSpacing
+})
+const numberOfItemsVisible = computed(() => {
+  // The maximum width we are allowed minus two buttons for next and previous
+  // divided by the width of a card.
+  // const n = itemCount.value - 1
+  const cardSpacingPx = convertRemToPixels(0.5)
+  const buttonPx = convertRemToPixels(2)
+  const cardWidthPx = convertRemToPixels(props.cardWidth)
+  const cardItems =
+    (props.maxWidth - 2 * buttonPx - 2 * cardSpacingPx) / (1.1 * cardWidthPx)
+  //Display at least one item
+  return Math.max(1, Math.floor(cardItems))
+})
+const canShowIndicatorBar = computed(() => {
+  const indicatorWidth = convertRemToPixels(1)
+  const indicatorAllowance =
+    props.maxWidth / (indicatorWidth * itemCount.value)
+  return (
+    props.showIndicatorBar && indicatorAllowance > 0.1 && itemCount.value > 1
+  )
+})
+const valueAdjustment = computed(() => {
+  const halfWindow = Math.floor(numberOfItemsVisible.value / 2)
+  let valueAdjust = currentIndex.value - halfWindow
+  if (valueAdjust < 0) {
+    valueAdjust = 0
+  } else if (valueAdjust + numberOfItemsVisible.value > itemCount.value) {
+    valueAdjust = itemCount.value - numberOfItemsVisible.value
+  }
+  return valueAdjust
+})
+const windowedItems = computed(() => {
+  let myArray = []
+  for (let i = 0; i < numberOfItemsVisible.value; i++) {
+    myArray.push(props.items[i + valueAdjustment.value])
+  }
+  return myArray
+})
+
+function cardClicked(payload) {
+  emit('card-clicked', payload)
+}
+function isActive(index) {
+  return (
+    currentIndex.value - valueAdjustment.value === index &&
+    props.highlightActive
+  )
+}
+function goNext() {
+  currentIndex.value += 1
+}
+function goPrev() {
+  currentIndex.value -= 1
+}
+function indicatorClicked(index) {
+  if (currentIndex.value !== index) {
+    currentIndex.value = index
+  }
+}
+</script>
+
 <template>
   <div ref="myButton" class="gallery">
     <div class="gallery-strip">
@@ -17,7 +187,7 @@
           :key="'card_' + index"
           :class="['key-image-span', { active: isActive(index) }]"
         >
-          <card
+          <Card
             v-if="item"
             :data="item"
             :body-style="bodyStyle"
@@ -43,7 +213,7 @@
       <div v-else style="width: 2rem" />
     </div>
     <div :style="bottomSpacer" />
-    <index-indicator
+    <IndexIndicator
       v-if="canShowIndicatorBar"
       :count="itemCount"
       :current="currentIndex"
@@ -51,181 +221,6 @@
     />
   </div>
 </template>
-
-<script>
-import IndexIndicator from './indexindicator.vue'
-import Card from './Card.vue'
-
-function convertRemToPixels(rem) {
-  if (typeof window !== 'undefined') {
-    return (
-      rem *
-      parseFloat(window.getComputedStyle(document.documentElement).fontSize)
-    )
-  }
-  return rem * 16
-}
-
-export default {
-  name: 'Gallery',
-  components: { IndexIndicator, Card },
-  props: {
-    items: {
-      type: Array,
-      default: () => {
-        return []
-      },
-    },
-    maxWidth: {
-      type: Number,
-      default: 3,
-    },
-    cardWidth: {
-      type: Number,
-      default: 13.8,
-    },
-    showIndicatorBar: {
-      type: Boolean,
-      default: true,
-    },
-    highlightActive: {
-      type: Boolean,
-      default: true,
-    },
-    showCardDetails: {
-      type: Boolean,
-      default: true,
-    },
-    bodyStyle: {
-      type: Object,
-      default: () => {
-        return { padding: '20px', background: '#ffffff' }
-      },
-    },
-    bottomSpacer: {
-      type: Object,
-      default: () => {
-        return { minHeight: '4rem' }
-      },
-    },
-    imageContainerStyle: {
-      type: Object,
-      default: () => {
-        return {}
-      },
-    },
-    imageStyle: {
-      type: Object,
-      default: () => {
-        return {}
-      },
-    },
-    metaData: {
-      type: Object,
-      default: () => {
-        return {
-          datasetVersion: -1,
-          datasetId: -1,
-        }
-      },
-    },
-    description: {
-      type: String,
-      default: '',
-    },
-    shadow: {
-      type: String,
-      default: 'always',
-    },
-  },
-  data() {
-    return {
-      count: 0,
-      currentIndex: 0,
-      controlHeight: 2,
-      controlWidth: 2,
-    }
-  },
-  computed: {
-    itemCount() {
-      return this.items.length
-    },
-    isPrevPossible() {
-      return this.currentIndex > 0
-    },
-    isNextPossible() {
-      return this.currentIndex < this.itemCount - 1
-    },
-    cardHeight() {
-      return 0.78 * this.cardWidth
-    },
-    cardLineWidth() {
-      const cardSpacing = 0.25
-      return this.itemCount * (this.cardWidth + cardSpacing) - cardSpacing
-    },
-    numberOfItemsVisible() {
-      // The maximum width we are allowed minus two buttons for next and previous
-      // divided by the width of a card.
-      // const n = this.itemCount - 1
-      const cardSpacingPx = convertRemToPixels(0.5)
-      const buttonPx = convertRemToPixels(2)
-      const cardWidthPx = convertRemToPixels(this.cardWidth)
-      const cardItems =
-        (this.maxWidth - 2 * buttonPx - 2 * cardSpacingPx) / (1.1 * cardWidthPx)
-      //Display at least one item
-      return Math.max(1, Math.floor(cardItems))
-    },
-    canShowIndicatorBar() {
-      const indicatorWidth = convertRemToPixels(1)
-      const indicatorAllowance =
-        this.maxWidth / (indicatorWidth * this.itemCount)
-      return (
-        this.showIndicatorBar && indicatorAllowance > 0.1 && this.itemCount > 1
-      )
-    },
-    valueAdjustment() {
-      const halfWindow = Math.floor(this.numberOfItemsVisible / 2)
-      let valueAdjust = this.currentIndex - halfWindow
-      if (valueAdjust < 0) {
-        valueAdjust = 0
-      } else if (valueAdjust + this.numberOfItemsVisible > this.itemCount) {
-        valueAdjust = this.itemCount - this.numberOfItemsVisible
-      }
-
-      return valueAdjust
-    },
-    windowedItems() {
-      let myArray = []
-      for (let i = 0; i < this.numberOfItemsVisible; i++) {
-        myArray.push(this.items[i + this.valueAdjustment])
-      }
-      return myArray
-    },
-  },
-  methods: {
-    cardClicked(payload) {
-      this.$emit('card-clicked', payload)
-    },
-    isActive(index) {
-      return (
-        this.currentIndex - this.valueAdjustment === index &&
-        this.highlightActive
-      )
-    },
-    goNext() {
-      this.currentIndex += 1
-    },
-    goPrev() {
-      this.currentIndex -= 1
-    },
-    indicatorClicked(index) {
-      if (this.currentIndex !== index) {
-        this.currentIndex = index
-      }
-    },
-  },
-}
-</script>
 
 <style lang="scss" scoped>
 .oval {

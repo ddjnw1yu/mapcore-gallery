@@ -1,29 +1,28 @@
+<script setup name="IndexIndicator">
+const props = defineProps({
+  count: {
+    type: Number,
+    default: 0,
+  },
+  current: {
+    type: Number,
+    default: 0,
+  },
+})
+
+const emit = defineEmits(['clicked'])
+</script>
+
 <template>
   <div class="indicator-container">
     <div
       v-for="(number, index) in count"
       :key="'indicator_' + number"
       :class="['indicator', { active: current === index }]"
-      @click="$emit('clicked', index)"
+      @click="emit('clicked', index)"
     />
   </div>
 </template>
-
-<script>
-export default {
-  name: 'IndexIndicator',
-  props: {
-    count: {
-      type: Number,
-      default: 0,
-    },
-    current: {
-      type: Number,
-      default: 0,
-    },
-  },
-}
-</script>
 
 <style lang="scss" scoped>
 .indicator-container {

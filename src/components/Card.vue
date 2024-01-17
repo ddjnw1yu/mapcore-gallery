@@ -1,3 +1,185 @@
+<script setup name="GalleryCard">
+import { ref, computed, watch, onUpdated, nextTick } from 'vue'
+import useS3 from './GalleryHelpers.js'
+
+function isValidHttpUrl(string) {
+  let url = undefined
+  try {
+    url = new URL(string)
+  } catch (_) {
+    return false
+  }
+  return url.protocol === 'http:' || url.protocol === 'https:'
+}
+
+const { defaultImg, getRequest } = useS3();
+const titleText = ref()
+
+const ro = ref(null)
+const triangleSize = ref(4)
+const thumbnail = ref(undefined)
+const useDefaultImg = ref(false)
+const disableTooltip = ref(false)
+const tooltipCalculated = ref(false)
+
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true,
+  },
+  width: {
+    type: Number,
+    default: 3,
+  },
+  height: {
+    type: Number,
+    default: 3,
+  },
+  showCardDetails: {
+    type: Boolean,
+  },
+  bodyStyle: {
+    type: Object,
+    default: () => {
+      return { padding: '20px', background: '#ffffff' }
+    },
+  },
+  imageStyle: {
+    type: Object,
+    default: () => {
+      return {}
+    },
+  },
+  imageContainerStyle: {
+    type: Object,
+    default: () => {
+      return {}
+    },
+  },
+  shadow: {
+    type: String,
+    default: 'always',
+  },
+})
+
+const emit = defineEmits(['card-clicked'])
+
+const isReady = computed(() => {
+  return (
+    props.data.title &&
+    ((thumbnail ? thumbnail.value : false) || useDefaultImg.value) &&
+    (props.data.link || props.data.userData)
+  )
+})
+const imageHeight = computed(() => {
+  return showCardDetails ? height * 0.525 : height
+})
+const imageWidth = computed(() => {
+  return width - 2 * marginDetails
+})
+const triangleHeight = computed(() => {
+  return height * 0.237
+})
+const marginDetails = computed(() => {
+  return height * 0.076
+})
+const typeIcon = computed(() => {
+  return showCardDetails ? height * 0.525 : height
+})
+
+watch(
+  () => props.data, () => {
+    thumbnail.value = undefined
+    useDefaultImg.value = false
+    tooltipCalculated.value = false
+    disableTooltip.value = false
+    if (props.data.thumbnail) {
+      if (isValidHttpUrl(props.data.thumbnail) && props.data.mimetype) {
+        downloadThumbnail(props.data.thumbnail, { fetchAttempts: 0 })
+      } else {
+        thumbnail.value = props.data.thumbnail
+      }
+    } else {
+      useDefaultImg.value = true
+    }
+    //Dynamically check title length to determine if popover should be shown
+    nextTick(() => {
+      calculateShowTooltip()
+    })
+  }, { immediate: true }
+)
+
+onUpdated(() => {
+  nextTick(() => {
+    calculateShowTooltip()
+  })
+})
+
+function cardClicked() {
+  if (props.data.link) {
+    const link = document.createElement('a')
+    link.href = props.data.link
+    link.target = '_blank'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  }
+  if (props.data.userData) {
+    emit('card-clicked', props.data.userData)
+  }
+}
+/**
+ * handle thumbnail downloading,, it will use a default svg image if fails
+ */
+function downloadThumbnail(url, info) {
+  getRequest(url, {}, 11000).then(
+    (response) => {
+      let data = response.data
+      if (typeof data === 'string' && data.startsWith('data:')) {
+        thumbnail.value = response.data
+      } else {
+        if (data.mimetype) {
+          thumbnail.value = `data:${data.mimetype};base64,${response.data}`
+        } else {
+          thumbnail.value = response.data
+        }
+      }
+    },
+    (reason) => {
+      if (
+        reason.message.includes('timeout') &&
+        reason.message.includes('exceeded') &&
+        info.fetchAttempts < 3
+      ) {
+        info.fetchAttempts += 1
+        downloadThumbnail(url, info)
+      } else {
+        useDefaultImg.value = true
+      }
+    }
+  )
+}
+//dynamically calculate if tooltip is required
+function calculateShowTooltip() {
+  if (props.data.hideTitle) {
+    disableTooltip.value = true
+    tooltipCalculated.value = true
+  } else {
+    const ele = titleText
+    //Check if title text is rendered yet
+    if (ele && ele.offsetParent) {
+      tooltipCalculated.value = true
+      if (ele.offsetWidth >= ele.scrollWidth) disableTooltip.value = true
+      else disableTooltip.value = false
+    } else {
+      //text not rendered yet
+      if (props.data.title.length > 20) disableTooltip.value = false
+      else disableTooltip.value = true
+    }
+  }
+}
+</script>
+
 <template>
   <el-card
     :shadow="shadow"
@@ -13,7 +195,7 @@
       >
         <img
           v-if="useDefaultImg"
-          src="../assets/logo-sparc-wave-primary.svg"
+          :src="defaultImg"
           v-svg-inline
           :style="imageStyle"
         />
@@ -58,242 +240,24 @@
           placement="top"
           trigger="hover"
           popper-class="gallery-popper"
+          virtual-triggering
+        />
+        <!--use v-show here to make sure el popover always have a starting location -->
+        <p
+          v-show="!data.hideTitle"
+          ref="titleText"
+          class="title"
         >
-        <template #reference>
-          <!--use v-show here to make sure el popover always have a starting location -->
-          <p
-            v-show="!data.hideTitle"
-            ref="titleText"
-            class="title"
-            persistent
-          >
-            {{ data.title }}
-          </p>
-          <p v-show="data.hideTitle" class="title text-placeholder" />
-        </template>
-      </el-popover>
+          {{ data.title }}
+        </p>
+        <p v-show="data.hideTitle" class="title text-placeholder"/>
         <el-button class="button" @click.prevent="cardClicked">
-          View {{ data.type }}</el-button
-        >
+          View {{ data.type }}
+        </el-button>
       </div>
     </div>
   </el-card>
 </template>
-
-<script>
-import {
-  ElButton as Button,
-  ElCard as Card,
-  ElPopover as Popover,
-  ElTooltip as Tooltip,
-  ElLoading as Loading,
-} from 'element-plus'
-import GalleryHelper from '../mixins/GalleryHelpers.js'
-import { ref } from 'vue'
-
-function isValidHttpUrl(string) {
-  let url = undefined
-
-  try {
-    url = new URL(string)
-  } catch (_) {
-    return false
-  }
-  return url.protocol === 'http:' || url.protocol === 'https:'
-}
-
-export default {
-  name: 'GalleryCard',
-  components: {
-    Button,
-    Card,
-    Popover,
-    Tooltip,
-    Loading
-  },
-  mixins: [GalleryHelper],
-  props: {
-    data: {
-      type: Object,
-      required: true,
-    },
-    width: {
-      type: Number,
-      default: 3,
-    },
-    height: {
-      type: Number,
-      default: 3,
-    },
-    showCardDetails: {
-      type: Boolean,
-    },
-    bodyStyle: {
-      type: Object,
-      default: () => {
-        return { padding: '20px', background: '#ffffff' }
-      },
-    },
-    imageStyle: {
-      type: Object,
-      default: () => {
-        return {}
-      },
-    },
-    imageContainerStyle: {
-      type: Object,
-      default: () => {
-        return {}
-      },
-    },
-    shadow: {
-      type: String,
-      default: 'always',
-    },
-  },
-  data() {
-    return {
-      ro: null,
-      triangleSize: 4,
-      thumbnail: undefined,
-      useDefaultImg: false,
-      disableTooltip: false,
-      tooltipCalculated: false,
-    }
-  },
-  setup() {
-    const titleText = ref()
-    return {
-      titleText
-    }
-  },
-  computed: {
-    isReady() {
-      return (
-        this.data.title &&
-        (this.thumbnail || this.useDefaultImg) &&
-        (this.data.link || this.data.userData)
-      )
-    },
-    imageHeight() {
-      return this.showCardDetails ? this.height * 0.525 : this.height
-    },
-    imageWidth() {
-      return this.width - 2 * this.marginDetails
-    },
-    triangleHeight() {
-      return this.height * 0.237
-    },
-    marginDetails() {
-      return this.height * 0.076
-    },
-    typeIcon() {
-      return undefined
-    },
-  },
-  watch: {
-    data: {
-      deep: true,
-      immediate: true,
-      handler: function () {
-        this.thumbnail = undefined
-        this.useDefaultImg = false
-        this.tooltipCalculated = false
-        this.disableTooltip = false
-        if (this.data.thumbnail) {
-          if (isValidHttpUrl(this.data.thumbnail) && this.data.mimetype) {
-            this.downloadThumbnail(this.data.thumbnail, { fetchAttempts: 0 })
-          } else {
-            this.thumbnail = this.data.thumbnail
-          }
-        } else {
-          this.useDefaultImg = true
-        }
-        //Dynamically check title length to determine if popover should be shown
-        this.$nextTick(() => {
-          this.calculateShowTooltip()
-        })
-      },
-    },
-  },
-  updated: function () {
-    if (!this.tooltipCalculated) {
-      this.$nextTick(() => {
-        this.calculateShowTooltip()
-      })
-    }
-  },
-  methods: {
-    /**
-     * Open a new link if link is provide.
-     * Fire an event if userData is provide.
-     */
-    cardClicked: function () {
-      if (this.data.link) {
-        const link = document.createElement('a')
-        link.href = this.data.link
-        link.target = '_blank'
-        document.body.appendChild(link)
-        link.click()
-        link.remove()
-      }
-      if (this.data.userData) {
-        this.$emit('card-clicked', this.data.userData)
-      }
-    },
-    /**
-     * handle thumbnail downloading,, it will use a default svg image if fails
-     */
-    downloadThumbnail: function (url, info) {
-      this.getRequest(url, {}, 11000).then(
-        (response) => {
-          let data = response.data
-          if (typeof data === 'string' && data.startsWith('data:')) {
-            this.thumbnail = response.data
-          } else {
-            if (this.data.mimetype) {
-              this.thumbnail = `data:${this.data.mimetype};base64,${response.data}`
-            } else {
-              this.thumbnail = response.data
-            }
-          }
-        },
-        (reason) => {
-          if (
-            reason.message.includes('timeout') &&
-            reason.message.includes('exceeded') &&
-            info.fetchAttempts < 3
-          ) {
-            info.fetchAttempts += 1
-            this.downloadThumbnail(url, info)
-          } else {
-            this.useDefaultImg = true
-          }
-        }
-      )
-    },
-    //dynamically calculate if tooltip is required
-    calculateShowTooltip: function () {
-      if (this.data.hideTitle) {
-        this.disableTooltip = true
-        this.tooltipCalculated = true
-      } else {
-        const ele = this.$refs.titleText
-        //Check if title text is rendered yet
-        if (ele && ele.offsetParent) {
-          this.tooltipCalculated = true
-          if (ele.offsetWidth >= ele.scrollWidth) this.disableTooltip = true
-          else this.disableTooltip = false
-        } else {
-          //text not rendered yet
-          if (this.data.title.length > 20) this.disableTooltip = false
-          else this.disableTooltip = true
-        }
-      }
-    },
-  },
-}
-</script>
 
 <style lang="scss" scoped>
 @use 'element-plus/theme-chalk/src/button';

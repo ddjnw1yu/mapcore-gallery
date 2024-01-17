@@ -1,42 +1,32 @@
+<script setup name="App">
+import Gallery from './components/Gallery.vue'
+
+const dataInput = [
+  {
+    title: 'test1',
+    type: 'data',
+    userData: 'https://sparc.science/',
+  },
+  {
+    title: 'test2',
+    type: 'data',
+    link: 'https://sparc.science/',
+  },
+  {
+    title: 'test3',
+    type: 'data',
+    link: 'https://sparc.science/',
+  },
+]
+
+function cardClicked(data) {
+  console.log('card-clicked', data)
+}
+</script>
+
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png" />
-    <gallery :items="dataInput" @card-clicked="cardClicked" />
+    <Gallery :items="dataInput" @card-clicked="cardClicked" />
   </div>
 </template>
-
-<script>
-import Gallery from './components/Gallery.vue'
-export default {
-  name: 'App',
-  components: {
-    Gallery,
-  },
-  data: function () {
-    return {
-      dataInput: [
-        {
-          title: 'test1',
-          type: 'data',
-          link: 'https://sparc.science/',
-        },
-        {
-          title: 'test2',
-          type: 'data',
-          link: 'https://sparc.science/',
-        },
-        {
-          title: 'test3',
-          type: 'data',
-          link: 'https://sparc.science/',
-        },
-      ],
-    }
-  },
-  methods: {
-    cardClicked: function (data) {
-      console.log('card-clicked', data)
-    },
-  },
-}
-</script>
