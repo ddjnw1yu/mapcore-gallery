@@ -196,7 +196,6 @@ function calculateShowTooltip() {
         <img
           v-if="useDefaultImg"
           :src="defaultImg"
-          v-svg-inline
           :style="imageStyle"
         />
         <img

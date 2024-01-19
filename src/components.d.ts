@@ -17,6 +17,5 @@ declare module 'vue' {
   }
   export interface ComponentCustomProperties {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']
-    vPopover: typeof import('element-plus/es')['ElPopoverDirective']
   }
 }
