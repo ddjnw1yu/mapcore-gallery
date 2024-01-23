@@ -1,6 +1,6 @@
 {
   "name": "@abi-software/gallery",
-  "version": "0.5.0-vue3.1",
+  "version": "0.5.0-vue3.2",
   "files": [
     "dist/*",
     "src/*",
@@ -34,7 +34,8 @@
       "import": "./dist/gallery.js",
       "require": "./dist/gallery.umd.cjs"
     },
-    "./dist/style.css": "./dist/style.css"
+    "./dist/style.css": "./dist/style.css",
+    "./src/*": "./src/*"
   },
   "dependencies": {
     "axios": "^1.6.5",
