@@ -166,6 +166,18 @@ function indicatorClicked(index) {
     currentIndex.value = index
   }
 }
+
+defineExpose({
+  count,
+  currentIndex,
+  controlHeight,
+  controlWidth,
+  cardClicked,
+  isActive,
+  goNext,
+  goPrev,
+  indicatorClicked
+})
 </script>
 
 <template>

@@ -138,8 +138,8 @@ function downloadThumbnail(url, info) {
       if (typeof data === 'string' && data.startsWith('data:')) {
         thumbnail.value = response.data
       } else {
-        if (data.mimetype) {
-          thumbnail.value = `data:${data.mimetype};base64,${response.data}`
+        if (props.data.mimetype) {
+          thumbnail.value = `data:${props.data.mimetype};base64,${response.data}`
         } else {
           thumbnail.value = response.data
         }
