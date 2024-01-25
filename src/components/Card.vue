@@ -250,7 +250,7 @@ function calculateShowTooltip() {
           {{ data.title }}
         </p>
         <p v-show="data.hideTitle" class="title text-placeholder"/>
-        <el-button class="button" @click.prevent="cardClicked">
+        <el-button class="button" @click.prevent="cardClicked" size="large">
           View {{ data.type }}
         </el-button>
       </div>

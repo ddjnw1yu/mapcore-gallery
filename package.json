@@ -1,6 +1,6 @@
 {
   "name": "@abi-software/gallery",
-  "version": "0.5.0-vue3.4",
+  "version": "0.5.0-vue3.5",
   "files": [
     "dist/*",
     "src/*",
