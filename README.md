@@ -1,35 +1,61 @@
 # ABI-Software Gallery
 
-## Project setup
+#### In App.vue - (Options API)
+```
+<template>
+    <div>
+      <Gallery :items="dataInput" @card-clicked="cardClicked" />
+    </div>
+</template>
 
-::
+<script>
+import Gallery from './components/Gallery.vue'
+import "@abi-software/gallery/dist/style.css";
+export default {
+  name: "App",
+  components: {
+    Gallery,
+  },
+  ...
+}
+```
 
-npm install
-
-## Compiles and hot-reloads for development
-
-::
-
-npm run serve
-
-## Compiles and minifies for production
-
-::
-
-npm run build
-
-## Run your unit tests
-
-::
-
-npm run test:unit
-
-## Lints and fixes files
-
-::
-
-npm run lint
+#### When using the mixin
+Contains the `defaultImg` source and the `getRequest` function for fetching the dataset images.
+```
+<script>
+/* eslint-disable no-alert, no-console */
+import GalleryHelper from "@abi-software/gallery/src/mixins/GalleryHelpers";
+export default {
+  mixins: [ GalleryHelper ],
+  ...
+}
+``` 
 
 ## Customize configuration
 
-See `Configuration Reference <https://cli.vuejs.org/config/>`\_.
+See [Vite Configuration Reference](https://vitejs.dev/config/).
+
+## Project Setup
+
+```sh
+npm install
+```
+
+### Compile and Hot-Reload for Development
+
+```sh
+npm run serve
+```
+
+### Compile and Minify for Production
+
+```sh
+npm run build-bundle
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+npm run lint
+```

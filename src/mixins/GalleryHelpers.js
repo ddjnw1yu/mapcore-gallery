@@ -1,11 +1,12 @@
 import axios from 'axios'
+import LogoSparcWavePrimary from '../assets/logo-sparc-wave-primary.svg'
 
 export default {
   //this mixin is not used by this code base but it can be used by other
   //projects to get a handle to various resources
   data() {
     return {
-      defaultImg: require('../assets/logo-sparc-wave-primary.svg'),
+      defaultImg: LogoSparcWavePrimary,
     }
   },
   methods: {
