@@ -24,7 +24,13 @@
     "release:minor": "npm version minor; npm publish",
     "release:patch": "npm version patch;  npm publish",
     "changelog": "auto-changelog -p --output CHANGELOG.md --template keepachangelog",
-    "version": "npm run build-bundle;npm run changelog; git add CHANGELOG.md"
+    "version": "npm run build-bundle;npm run changelog; git add CHANGELOG.md",
+    "vuese-gen": "node vuese-generator.js",
+    "vuese-watch": "node vuese-generator.js watch",
+    "docs:dev": "vitepress dev docs",
+    "docs:watch": "concurrently \"npm run vuese-watch\" \"npm run docs:dev\"",
+    "docs:build": "npm run vuese-gen; vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "type": "module",
   "main": "./dist/gallery.umd.cjs",
@@ -56,6 +62,7 @@
     "prettier": "3.1.1",
     "sass": "^1.69.7",
     "vite": "^5.0.10",
-    "vitepress": "^1.0.2"
+    "vitepress": "^1.0.2",
+    "vue-docgen-api": "^4.78.0"
   }
 }

@@ -32,7 +32,7 @@ export default {
   mixins: [ GalleryHelper ],
   ...
 }
-``` 
+```
 
 ## Customize configuration
 
@@ -61,3 +61,14 @@ npm run build-bundle
 ```sh
 npm run lint
 ```
+
+## API Documentation
+
+The API documentation is developed with `vitepress` and `vuese`. Documentation pages are in the `docs` folder.
+
+### To run in local development mode
+```bash
+npm run docs:watch
+```
+
+This will start the documentation server with `vitepress` on port `:5173` and watch the components' changes.
