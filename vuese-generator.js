@@ -36,7 +36,7 @@ function generateMarkdown(file) {
         prop.name = prop.name
         prop.type = prop.type.name
         prop.describe = [prop.description]
-        prop.default = prop.defaultValue.value
+        prop.default = prop.defaultValue.value.replaceAll('\n', '')
       })
 
       const parseResult = {
