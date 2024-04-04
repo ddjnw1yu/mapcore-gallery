@@ -16,56 +16,87 @@ function convertRemToPixels(rem) {
 }
 
 const props = defineProps({
+  /**
+   * The array of items (data) to render the gallery.
+   */
   items: {
     type: Array,
     default: () => {
       return []
     },
   },
+  /**
+   * The maximum width we are allowed minus two buttons for next and previous divided by the width of a card.
+   */
   maxWidth: {
     type: Number,
     default: 3,
   },
+  /**
+   * The width of the card in rem unit.
+   */
   cardWidth: {
     type: Number,
     default: 13.8,
   },
+  /**
+   * The option to show indicator bar at the bottom.
+   */
   showIndicatorBar: {
     type: Boolean,
     default: true,
   },
+  /**
+   * The option to highlight the active item.
+   */
   highlightActive: {
     type: Boolean,
     default: true,
   },
+  /**
+   * The option to show card details.
+   */
   showCardDetails: {
     type: Boolean,
     default: true,
   },
+  /**
+   * The CSS to define card's style.
+   */
   bodyStyle: {
     type: Object,
     default: () => {
       return { padding: '20px', background: '#ffffff' }
     },
   },
+  /**
+   * The space between the card and indicator bar.
+   */
   bottomSpacer: {
     type: Object,
     default: () => {
       return { minHeight: '4rem' }
     },
   },
+  /**
+   * The CSS for image container in card.
+   */
   imageContainerStyle: {
     type: Object,
     default: () => {
       return {}
     },
   },
+  /**
+   * The CSS for image style in card.
+   */
   imageStyle: {
     type: Object,
     default: () => {
       return {}
     },
   },
+  // TODO: not in use
   metaData: {
     type: Object,
     default: () => {
@@ -75,10 +106,14 @@ const props = defineProps({
       }
     },
   },
+  // TODO: not in use
   description: {
     type: String,
     default: '',
   },
+  /**
+   * when to show card shadows (always / hover / never)
+   */
   shadow: {
     type: String,
     default: 'always',

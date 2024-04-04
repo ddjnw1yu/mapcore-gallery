@@ -36,8 +36,7 @@ export default {
 ```js-vue
   <div class="your-outer-container">
     <Gallery
-      :items="dataInput"
-      @card-clicked="cardClicked"
+      :items="items"
     />
   </div>
 
@@ -49,6 +48,23 @@ export default {
       components: { Gallery },
       data: function () {
         return {
+          items: [
+            {
+              title: 'test1',
+              type: 'data',
+              userData: 'https://sparc.science/',
+            },
+            {
+              title: 'test2',
+              type: 'data',
+              link: 'https://sparc.science/',
+            },
+            {
+              title: 'test3',
+              type: 'data',
+              link: 'https://sparc.science/',
+            },
+          ]
         }
       }
     }
