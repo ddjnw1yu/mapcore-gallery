@@ -5,10 +5,7 @@
 <div class="demo-map-container">
   <div class="demo-map-container-inner">
     <ClientOnly>
-      <iframe
-        src="https://mapcore-demo.org/current/mapintegratedvuer/"
-      >
-      </iframe>
+      <Gallery :items="items" />
     </ClientOnly>
   </div>
 </div>
@@ -17,19 +14,29 @@
 import { defineClientComponent } from "vitepress";
 import "./demo-styles.css";
 
+const items = [
+  {
+    title: 'Title 1',
+    type: 'data1',
+    userData: 'https://sparc.science/',
+  },
+  {
+    title: 'Title 2',
+    type: 'data2',
+    link: 'https://sparc.science/',
+  },
+  {
+    title: 'Title 3',
+    type: 'data3',
+    link: 'https://sparc.science/',
+  },
+]
+
 const Gallery = defineClientComponent(() => {
   return import("../src/components/Gallery.vue");
 })
 </script>
 
-<script>
-export default {
-  data: function() {
-    return {
-    };
-  }
-}
-</script>
 
 ## Code Preview
 
@@ -41,7 +48,7 @@ export default {
   </div>
 
   <script>
-    import { Gallery } from "@abi-software/gallery";
+    import Gallery from './components/Gallery.vue'
     import "@abi-software/gallery/dist/style.css";
 
     export default {
