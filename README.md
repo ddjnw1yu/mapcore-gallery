@@ -2,6 +2,8 @@
 
 This component is now built with Vue3 and Vite, Vue2 is no longer maintained but the source code can be found in this [branch](https://github.com/ABI-Software/mapcore-gallery/tree/Vue-2).
 
+[mapcore-gallery documentation](https://abi-software.github.io/mapcore-gallery/)
+
 #### In App.vue - (Options API)
 ```
 <template>
