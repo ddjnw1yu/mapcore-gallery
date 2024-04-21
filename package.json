@@ -1,6 +1,6 @@
 {
   "name": "@abi-software/gallery",
-  "version": "0.5.0-vue3.5",
+  "version": "1.0.0",
   "files": [
     "dist/*",
     "src/*",
@@ -14,7 +14,7 @@
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
-    "serve": "vite",
+    "serve": "vite --host",
     "build-bundle": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
