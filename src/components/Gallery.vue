@@ -120,7 +120,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['card-clicked', 'dataset-clicked'])
+const emit = defineEmits(['card-clicked', 'dataset-clicked']);
 
 const count = ref(0)
 const currentIndex = ref(0)
@@ -185,7 +185,7 @@ function cardClicked(payload) {
   emit('card-clicked', payload)
 }
 function datasetClicked(payload) {
-  emit('dataset-clicked', payload)
+  emit('dataset-clicked', payload);
 }
 function isActive(index) {
   return (
