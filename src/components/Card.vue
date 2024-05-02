@@ -62,7 +62,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['card-clicked'])
+const emit = defineEmits(['card-clicked', 'dataset-clicked'])
 
 const isReady = computed(() => {
   return (
@@ -122,6 +122,7 @@ function cardClicked() {
     link.target = '_blank'
     document.body.appendChild(link)
     link.click()
+    emit('dataset-clicked', props.data.link)
     link.remove()
   }
   if (props.data.userData) {
