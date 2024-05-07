@@ -120,7 +120,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['card-clicked'])
+const emit = defineEmits(['card-clicked', 'datalink-clicked']);
 
 const count = ref(0)
 const currentIndex = ref(0)
@@ -184,6 +184,9 @@ const windowedItems = computed(() => {
 function cardClicked(payload) {
   emit('card-clicked', payload)
 }
+function datalinkClicked(payload) {
+  emit('datalink-clicked', payload);
+}
 function isActive(index) {
   return (
     currentIndex.value - valueAdjustment.value === index &&
@@ -245,6 +248,7 @@ defineExpose({
             :shadow="shadow"
             :show-card-details="showCardDetails"
             @card-clicked="cardClicked"
+            @datalink-clicked="datalinkClicked"
           />
         </span>
       </div>

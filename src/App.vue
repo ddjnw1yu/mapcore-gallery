@@ -22,11 +22,15 @@ const dataInput = [
 function cardClicked(data) {
   console.log('card-clicked', data)
 }
+
+function datalinkClicked(data) {
+  console.log('datalink-clicked', data);
+}
 </script>
 
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png" />
-    <Gallery :items="dataInput" @card-clicked="cardClicked" />
+    <Gallery :items="dataInput" @card-clicked="cardClicked" @datalink-clicked="datalinkClicked" />
   </div>
 </template>
