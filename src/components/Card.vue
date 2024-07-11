@@ -341,7 +341,7 @@ p.bold {
   color: #303133 !important;
   font-size: 12px;
   line-height: 1rem;
-  height: 1rem;
+  height: fit-content;
   padding: 10px;
 }
 .gallery-popper.el-popper[x-placement^='top'] .popper__arrow {
